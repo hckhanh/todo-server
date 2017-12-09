@@ -1,0 +1,15 @@
+{
+  "execMap": {
+    "js": "node"
+  },
+  "watch": [
+    "bin/",
+    "routes/",
+    "routes/",
+    "app.js",
+    "nodemon.json"
+  ],
+  "env": {
+  },
+  "ext": "js json"
+}

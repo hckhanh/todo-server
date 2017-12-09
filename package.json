@@ -2,8 +2,11 @@
   "name": "todo-server",
   "version": "0.0.0",
   "private": true,
+  "description": "Server side for Todo app",
+  "license": "UNLICENSED",
+  "main": "bin/www",
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "nodemon"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
@@ -11,10 +14,13 @@
     "debug": "~3.1.0",
     "express": "~4.16.2",
     "jade": "~1.11.0",
+    "jsonwebtoken": "^8.1.0",
     "morgan": "~1.9.0",
+    "rollbar": "^2.3.2",
     "serve-favicon": "~2.4.5"
   },
   "devDependencies": {
-    "eslint": "^4.13.0"
+    "eslint": "^4.13.0",
+    "nodemon": "^1.12.5"
   }
 }
