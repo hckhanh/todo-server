@@ -26,6 +26,13 @@
       "warn"
     ],
     "no-undef": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "object-curly-spacing": [
+      "warn",
+      "always",
+      {
+        "objectsInObjects": true
+      }
+    ]
   }
 }

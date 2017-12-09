@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 const tracker = require('../tracker')
+const graphqlHTTP = require('express-graphql')
+const { buildSchema } = require('graphql')
 
 const JWT_SECRET = process.env.JWT_SECRET
 
@@ -13,8 +15,10 @@ router.use((req, res, next) => {
   if (token) {
     jwt.verify(token, JWT_SECRET, (error, user) => {
       if (error) {
-        tracker.error(error)
+        return tracker.error(error)
       }
+
+      // user credentials are added to graphQL context
       req.user = user
     })
   }
@@ -22,9 +26,21 @@ router.use((req, res, next) => {
   next()
 })
 
-/* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource', req.user)
-})
+const schema = buildSchema(`
+  type Query {
+    hello: String
+  }
+`)
+
+const root = { hello: () => 'Hello world!' }
+
+/**
+ * GET api for graphQL
+ */
+router.all('/', graphqlHTTP({
+  schema: schema,
+  rootValue: root,
+  graphiql: true
+}))
 
 module.exports = router
