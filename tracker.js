@@ -5,8 +5,8 @@ const isProduction = process.env.NODE_ENV === 'production'
 const rollbar = new Rollbar({
   enabled: isProduction,
   accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
-  captureUncaught: true,
-  captureUnhandledRejections: true
+  captureUncaught: isProduction,
+  captureUnhandledRejections: isProduction
 })
 
 module.exports = {
