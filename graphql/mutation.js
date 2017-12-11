@@ -8,6 +8,7 @@ const {
 } = require('graphql')
 const User = require('./schema/user')
 const UserRegistration = require('./schema/user-registration')
+const { connect } = require('../database')
 
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
@@ -35,6 +36,18 @@ const Mutation = new GraphQLObjectType({
           type: UserRegistration,
           description: 'User information which is used to register an account'
         }
+      },
+      resolve: (obj, args, context) => {
+        return new Promise((resolve, reject) => {
+          connect(async db => {
+            try {
+              const user = await db.collection('user').insertOne(args.registration)
+              resolve(user)
+            } catch (error) {
+              reject(error)
+            }
+          })
+        })
       }
     }
   }
