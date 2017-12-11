@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const jwt = require('jsonwebtoken')
 const graphqlHTTP = require('express-graphql')
 const requestIp = require('request-ip')
 
+const jwt = require('../jwt')
 const tracker = require('../tracker')
 const schema = require('../graphql/schema')
 const { formatError } = require('../error')
@@ -18,20 +18,18 @@ router.use(requestIp.mw())
 /**
  * any schema from /api route will be check the access_token in "params" or Authorization on "header" or "body"
  */
-router.use((req, res, next) => {
-  const token = req.headers['Authorization'] || req.query['access_token'] || req.body['access_token']
-  if (token) {
-    jwt.verify(token, JWT_SECRET, (error, user) => {
-      if (error) {
-        return tracker.error(error)
-      }
-
+router.use(async (req, res, next) => {
+  try {
+    const token = req.headers['authorization'] || req.query['access_token'] || req.body['access_token']
+    if (token) {
       // user credentials are added to graphQL context
-      req.user = user
-    })
-  }
+      req.auth = await jwt.verify(token, JWT_SECRET)
+    }
 
-  next()
+    next()
+  } catch (error) {
+    next(error)
+  }
 })
 
 /**

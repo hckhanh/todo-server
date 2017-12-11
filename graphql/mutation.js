@@ -1,4 +1,5 @@
 const {
+  GraphQLBoolean,
   GraphQLID,
   GraphQLList,
   GraphQLNonNull,
@@ -39,6 +40,22 @@ async function generateToken(db, userId, context) {
   })
 
   return { expiredAt, token }
+}
+
+async function verifyAccount(db, context) {
+  const Session = db.collection('session')
+  const auth = context.auth
+
+  if (auth) {
+    const session = await Session.findOne({ _id: auth.sessionId })
+    if (session) {
+      return session.userId === auth.userId && session.ip === context.clientIp ? session : null
+    } else {
+      return null
+    }
+  } else {
+    return null
+  }
 }
 
 const Mutation = new GraphQLObjectType({
@@ -106,6 +123,31 @@ const Mutation = new GraphQLObjectType({
 
               const { expiredAt, token } = await generateToken(db, userId, context)
               resolve({ token, expired_at: expiredAt.toISOString() })
+            } catch (error) {
+              reject(error)
+            }
+          })
+        })
+      }
+    },
+    logout: {
+      type: GraphQLBoolean,
+      description: 'Log out user from the current session',
+      resolve: (obj, args, context) => {
+        return new Promise((resolve, reject) => {
+          connect(async db => {
+            try {
+              const session = verifyAccount(db, context)
+              if (session) {
+                const result = await db.collection('session').deleteOne(session)
+                if (result.deletedCount > 0) {
+                  resolve(true)
+                } else {
+                  reject(new Error('Unauthorized'))
+                }
+              } else {
+                reject(new Error('Unauthorized'))
+              }
             } catch (error) {
               reject(error)
             }
