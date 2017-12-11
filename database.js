@@ -40,7 +40,7 @@ module.exports.initDatabase = () => {
       })
 
       // Session will be expired after 15 days
-      Session.createIndex('created_date', { expireAfterSeconds: ms('15 days') / 1000 }, (error) => {
+      Session.createIndex('expired_at', { expireAfterSeconds: 0 }, (error) => {
         error && tracker.error(error)
       })
     })

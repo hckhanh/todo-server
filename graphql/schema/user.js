@@ -13,7 +13,8 @@ const User = new GraphQLObjectType({
   fields: {
     id: {
       type: GraphQLID,
-      description: 'id of user'
+      description: 'id of user',
+      resolve: user => user._id
     },
     name: {
       type: GraphQLString,
@@ -25,7 +26,8 @@ const User = new GraphQLObjectType({
     },
     sessions: {
       type: new GraphQLList(Session),
-      description: 'When user login, a session will be added to this list'
+      description: 'When user login, a session will be added to this list',
+      resolve: () => ([])
     }
   }
 })
