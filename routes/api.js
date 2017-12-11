@@ -1,10 +1,12 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
-const tracker = require('../tracker')
 const graphqlHTTP = require('express-graphql')
-const schema = require('../graphql/schema')
 const requestIp = require('request-ip')
+
+const tracker = require('../tracker')
+const schema = require('../graphql/schema')
+const { formatError } = require('../error')
 
 const JWT_SECRET = process.env.JWT_SECRET
 
@@ -37,7 +39,8 @@ router.use((req, res, next) => {
  */
 router.all('/', graphqlHTTP({
   schema: schema,
-  graphiql: true
+  graphiql: true,
+  formatError
 }))
 
 module.exports = router

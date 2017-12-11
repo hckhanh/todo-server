@@ -9,13 +9,18 @@ const dbUrl = process.env.DATABASE_URL
 const dbName = process.env.DATABASE_NAME
 
 module.exports.connect = async (callback) => {
-  // Use connect method to connect to the server
-  const client = await MongoClient.connect(dbUrl)
-  const db = await client.db(dbName)
+  try {
+    // Use connect method to connect to the server
+    const client = await MongoClient.connect(dbUrl)
+    const db = await client.db(dbName)
 
-  await callback(db)
+    await callback(db)
 
-  client.close()
+    client.close()
+  } catch (error) {
+    tracker.error(error)
+    process.exit()
+  }
 }
 
 module.exports.initDatabase = () => {
